@@ -1,12 +1,14 @@
-
+require("dotenv").config();
 const express = require("express");
-const Post = require("./models/Post");
+const mongoose = require("mongoose");
+
+const Event = require("./models/Event");
+
+const PORT = process.env.PORT || 5000;
 
 const app = express();
 
 app.use(express.json());
-
-app.use(express.urlencoded({extended: false}))
 
 // routes
 app.get("/ping", (req, res, next) => {
@@ -19,14 +21,15 @@ app.get("/ping", (req, res, next) => {
 app.post('/events', async (req, res, next) => {
     const {eventName, eventDate} = req.body;
     try {
-        const post = new Post({
-            eventName,
-            eventDate
-        })
-        post.save({
-            eventName, eventDate
-        })
-        res.status(201).json(post)
+        const event = new Event({
+          eventName,
+          eventDate,
+        });
+        event.save({
+          eventName,
+          eventDate,
+        });
+        res.status(201).json(event);
     } catch (err) {
         console.log(err)
         res.status(500).json(err)
@@ -34,5 +37,15 @@ app.post('/events', async (req, res, next) => {
 
 })
 
-module.exports = app;
-
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Connected to DB");
+    app.listen(PORT, () => {
+      console.log(`listening on port ${PORT}`);
+    });
+  })
+  .catch((err) => console.error(err));

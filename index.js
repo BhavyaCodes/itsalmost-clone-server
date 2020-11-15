@@ -1,41 +1,38 @@
-require("dotenv").config();
 
 const express = require("express");
-const mongoose = require("mongoose");
-
-const PORT = process.env.PORT || 5000;
+const Post = require("./models/Post");
 
 const app = express();
 
-mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("Connected to DB"))
-  .catch((err) => console.error(err));
+app.use(express.json());
 
-//mongoose model
-
-const postSchema = new mongoose.Schema({
-  eventName: {
-    type: String,
-    required: true,
-  },
-  eventDate: {
-    type: Date,
-    required: true,
-  },
-});
-
-const Post = mongoose.model("Post", postSchema);
+app.use(express.urlencoded({extended: false}))
 
 // routes
-
 app.get("/ping", (req, res, next) => {
-  res.send({ ping: "pong" });
+    res.send({ping: "pong"});
 });
 
-app.listen(PORT, () => {
-  console.log(`listening on port ${PORT}`);
-});
+/**
+ * Post event
+ */
+app.post('/events', async (req, res, next) => {
+    const {eventName, eventDate} = req.body;
+    try {
+        const post = new Post({
+            eventName,
+            eventDate
+        })
+        post.save({
+            eventName, eventDate
+        })
+        res.status(201).json(post)
+    } catch (err) {
+        console.log(err)
+        res.status(500).json(err)
+    }
+
+})
+
+module.exports = app;
+

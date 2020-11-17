@@ -18,7 +18,7 @@ app.get("/ping", (req, res, next) => {
 /**
  * Post event
  */
-app.get("/events/:id", async (req, res, next) => {
+app.get("/api/events/:id", async (req, res, next) => {
   const { id } = req.params;
   try {
     const event = await Event.findById(id);
@@ -37,7 +37,7 @@ app.get("/events/:id", async (req, res, next) => {
 /**
  * Post event
  */
-app.post("/events", async (req, res, next) => {
+app.post("/api/events", async (req, res, next) => {
   const { eventName, eventDate } = req.body;
   try {
     const event = new Event({

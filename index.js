@@ -23,14 +23,14 @@ app.get("/api/events/:id", async (req, res, next) => {
   try {
     const event = await Event.findById(id);
     if (!event) {
-      res.status(404).json({
+      return res.status(404).json({
         message: "There is no event with this id: " + id,
       });
     }
-    res.status(200).json(event);
+    return res.status(200).json(event);
   } catch (err) {
     console.log(err);
-    res.status(500).json(err);
+    return res.status(500).json(err);
   }
 });
 
@@ -48,10 +48,10 @@ app.post("/api/events", async (req, res, next) => {
       eventName,
       eventDate,
     });
-    res.status(201).json(event);
+    return res.status(201).json(event);
   } catch (err) {
     console.log(err);
-    res.status(500).json(err);
+    return res.status(500).json(err);
   }
 });
 

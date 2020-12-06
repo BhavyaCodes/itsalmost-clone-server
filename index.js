@@ -18,20 +18,44 @@ app.get("/ping", (req, res, next) => {
 /**
  * Post event
  */
-app.get("/api/events/:id", async (req, res, next) => {
-  const { id } = req.params;
-  try {
-    const event = await Event.findById(id);
-    if (!event) {
-      return res.status(404).json({
-        message: "There is no event with this id: " + id,
-      });
+app.get('/events/:id', async (req, res, next) => {
+    const {id} = req.params;
+    try {
+        const event = await Event.findOne({
+            id
+        });
+        if(event === null || event === undefined){
+            return res.status(404).json({
+                message: "There is no event with this id: " + id
+            });
+        }
+        return res.status(200).json(event);
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json(err)
     }
-    return res.status(200).json(event);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json(err);
-  }
+
+})
+
+/**
+ * Post event
+ */
+app.post('/events', async (req, res, next) => {
+    const {eventName, eventDate} = req.body;
+    try {
+        const event = new Event({
+          eventName,
+          eventDate,
+        });
+        event.save({
+          eventName,
+          eventDate,
+        });
+        return res.status(201).json(event);
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json(err)
+    }
 });
 
 /**
